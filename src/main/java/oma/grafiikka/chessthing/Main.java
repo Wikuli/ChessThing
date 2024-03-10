@@ -17,14 +17,11 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import javafx.scene.shape.Rectangle;
 
@@ -276,18 +273,6 @@ public class Main extends Application {
 
                     }
                 }, 0, 100);
-
-
-                /*
-                try {
-                    gameList = CSVT.loadPgn(path);
-                    ArrayList<Integer> e = createGameSelectionList(gameList);
-                }
-                catch (Exception e){
-                    System.out.println(e);
-                }
-
-                 */
             }
         });
 

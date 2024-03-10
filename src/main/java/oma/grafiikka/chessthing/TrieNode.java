@@ -51,36 +51,29 @@ public class TrieNode {
     private class Iter implements Iterator<TrieNode> {
         private Stack<TrieNode> stack = new Stack<>();
 
+        //Initialise the stack with the first node's children from the Trie tree
+        //First node is the one we are currently in so we don't need to push that to the stack
         public Iter(Collection<TrieNode> list){
             for (TrieNode trieNode : list) {
                 stack.push(trieNode);
             }
         }
 
-
+        //Check if stack is empty if it is every node has been checked
         @Override
         public boolean hasNext() {
             return !stack.isEmpty();
         }
 
+        //Pop the top node from the stack and add it's children to the stack
+        //Return the popped node to the for loop
         @Override
         public TrieNode next() {
-            //Add stuff to stack. Miksu send halp
             TrieNode ret = stack.pop();
             if(!ret.isWord()){
                 ret.getChildren().forEach((key, value) -> stack.push(value));
             }
             return ret;
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("remove not supported");
-        }
-
-        @Override
-        public void forEachRemaining(Consumer<? super TrieNode> action) {
-            Iterator.super.forEachRemaining(action);
         }
     }
 }

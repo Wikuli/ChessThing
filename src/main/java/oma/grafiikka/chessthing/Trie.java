@@ -47,6 +47,7 @@ public class Trie {
         //and add them to the current node's GameIDsArr
         if(!cur.isWord()){
             ArrayList<Integer> temp = new ArrayList<>();
+            //Loop through all of the nodes under the current node using the iterator
             for (Iterator<TrieNode> it = cur.getAllUncomputedChildren(); it.hasNext(); ) {
                 TrieNode node = it.next();
                 if(node.isWord()){
