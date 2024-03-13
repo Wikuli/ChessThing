@@ -203,6 +203,9 @@ public class Main extends Application {
             @Override
             public void handle(MouseEvent event) {
                 String path = openFileExp();
+                if(path == null){
+                    return;
+                }
                 text.setVisible(true);
                 rectangle1.setVisible(true);
                 progressBar.setVisible(true);

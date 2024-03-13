@@ -130,6 +130,9 @@ public class CSVT {
             if(result == JFileChooser.APPROVE_OPTION){
                 filePath = fileChooser.getSelectedFile().getAbsolutePath();
             }
+            else{
+                filePath = null;
+            }
         }
         catch (Exception e){
             System.out.println(e);
