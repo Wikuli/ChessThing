@@ -43,8 +43,7 @@ public class CSVT {
         try {
             holder.loadPgn();
             games = holder.getGames();
-            addToQueue(new CSVTStatus(CSVTStatus.Type.pgnDone, 0, "Games loaded"),
-                    1);
+            addToQueue(new CSVTStatus(CSVTStatus.Type.pgnDone, 0, "Games loaded"), 1);
         }
         catch (Exception e){
             e.printStackTrace();

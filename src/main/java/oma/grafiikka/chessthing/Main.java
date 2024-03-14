@@ -61,24 +61,25 @@ public class Main extends Application {
         hBox.getChildren().addAll(gameSelectionList, lauta.gp, moveLVs);
         Rectangle rectangle = new Rectangle(10000, 10000, Color.DARKGRAY);
         Button createFilter = new Button("Filter");
-        createFilter.setVisible(false);
+        //createFilter.setVisible(false);
         VBox vert = new VBox(hBox, createFilter);
         vert.setSpacing(20);
         StackPane sp = new StackPane(rectangle, vert);
         Button openFile = new Button("Open");
         Text text = new Text("Loading games...");
         text.setFont(new Font(42));
-        text.setVisible(false);
-        text.setTranslateY(-70);
         ProgressBar progressBar = new ProgressBar();
         progressBar.setMinWidth(300);
-        progressBar.setVisible(false);
+        VBox loadingVbox = new VBox(40);
+        loadingVbox.getChildren().addAll(text, progressBar);
         Rectangle rectangle1 = new Rectangle(10000, 10000);
         rectangle1.setFill(Color.BLACK);
         rectangle1.setOpacity(0.5);
-        rectangle1.setVisible(false);
-        sp.getChildren().addAll(rectangle1, openFile, createFilter);
-        sp.getChildren().addAll(progressBar, text);
+        Pane pane = new Pane(rectangle1, loadingVbox);
+        loadingVbox.setTranslateX(200);
+        loadingVbox.setTranslateY(200);
+        pane.setVisible(false);
+        sp.getChildren().addAll(pane, openFile, createFilter);
         StackPane.setAlignment(openFile, Pos.BOTTOM_LEFT);
 
         Scene scene = new Scene(sp, 900,750);
@@ -163,10 +164,12 @@ public class Main extends Application {
                         else if(blackMoves.getSelectionModel().isEmpty() && whiteMoves.getSelectionModel().isEmpty()){
                             whiteMoves.requestFocus();
                             whiteMoves.getSelectionModel().select(0);
+                            whiteMoves.scrollTo(0);
                         }
                         else if(blackMoves.getSelectionModel().isEmpty()){
                             blackMoves.requestFocus();
                             blackMoves.getSelectionModel().select(whiteMoves.getSelectionModel().getSelectedIndex());
+                            blackMoves.scrollTo(whiteMoves.getSelectionModel().getSelectedIndex());
                             whiteMoves.getSelectionModel().clearSelection();
                         }
                         else{
@@ -174,6 +177,7 @@ public class Main extends Application {
                                 whiteMoves.requestFocus();
                                 whiteMoves.getSelectionModel().select(blackMoves.getSelectionModel()
                                         .getSelectedIndex() + 1);
+                                whiteMoves.scrollTo(blackMoves.getSelectionModel().getSelectedIndex() + 1);
                                 blackMoves.getSelectionModel().clearSelection();
                             }
                         }
@@ -187,11 +191,13 @@ public class Main extends Application {
                             blackMoves.requestFocus();
                             blackMoves.getSelectionModel().select(whiteMoves.getSelectionModel()
                                     .getSelectedIndex() - 1);
+                            blackMoves.scrollTo(whiteMoves.getSelectionModel().getSelectedIndex() - 1);
                             whiteMoves.getSelectionModel().clearSelection();
                         }
                         else{
                             whiteMoves.requestFocus();
                             whiteMoves.getSelectionModel().select(blackMoves.getSelectionModel().getSelectedIndex());
+                            whiteMoves.scrollTo(blackMoves.getSelectionModel().getSelectedIndex());
                             blackMoves.getSelectionModel().clearSelection();
                         }
                     }
@@ -203,9 +209,7 @@ public class Main extends Application {
             @Override
             public void handle(MouseEvent event) {
                 String path = openFileExp();
-                text.setVisible(true);
-                rectangle1.setVisible(true);
-                progressBar.setVisible(true);
+                pane.setVisible(true);
 
                 CSVT.asyncLoad(path);
                 Timer timer = new Timer();
@@ -247,9 +251,7 @@ public class Main extends Application {
                                     Platform.runLater(new Runnable() {
                                         @Override
                                         public void run() {
-                                            text.setVisible(false);
-                                            rectangle1.setVisible(false);
-                                            progressBar.setVisible(false);
+                                            pane.setVisible(false);
                                             ArrayList<Integer> glont = new ArrayList<>(games.size());
                                             for(int i = 1; i < games.size() + 1; i++){
                                                 glont.add(i);
@@ -279,9 +281,10 @@ public class Main extends Application {
         createFilter.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                Filter filter = new Filter("sugma", 1860, 1650, "savinka59", "yes");
-                ArrayList<Integer> ids = FilterUsage.getContainedIDs(filter, gameList);
-                System.out.println(ids);
+                HBox hBox1 = new HBox();
+                Scene filterStage = new Scene(hBox1, 600,600);
+
+
             }
         });
     }
