@@ -210,6 +210,12 @@ public class Main extends Application {
             public void handle(MouseEvent event) {
                 String path = openFileExp();
                 pane.setVisible(true);
+                if(path == null){
+                    return;
+                }
+                text.setVisible(true);
+                rectangle1.setVisible(true);
+                progressBar.setVisible(true);
 
                 CSVT.asyncLoad(path);
                 Timer timer = new Timer();
