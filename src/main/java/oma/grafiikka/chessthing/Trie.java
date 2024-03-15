@@ -47,19 +47,22 @@ public class Trie {
     }
     public void addWord(String word, int id){
         TrieNode cur = rootNode;
-
+        boolean isWord = false;
+        String content = "";
         for (char c: word.toCharArray()){
             if(cur.isWord()){
-                cur.setGameIDs(id);
+                cur.setGameIDs(id + 1);
+                isWord = true;
             }
-            System.out.println(c);
+            content += c;
             cur = cur.getChildren().computeIfAbsent(c, l -> new TrieNode());
+            cur.setContent(content);
         }
-        cur.setGameIDs(id);
+        cur.setGameIDs(id + 1);
         //Higher filter creation time for lower filter application time
         //If current isn't flagged as a word find every gameId from its children
         //and add them to the current node's GameIDsArr
-        if(!cur.isWord()){
+        if(!cur.isWord() && !isWord){
             ArrayList<Integer> temp = new ArrayList<>();
             //Loop through all of the nodes under the current node using the iterator
             for (Iterator<TrieNode> it = cur.getAllUncomputedChildren(); it.hasNext(); ) {

@@ -3,10 +3,7 @@ package oma.grafiikka.chessthing;
 import com.github.bhlangonijr.chesslib.game.Game;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class FilterUsage {
     static ArrayList<ArrayList<Integer>> eloIds = new ArrayList<>();
@@ -18,8 +15,9 @@ public class FilterUsage {
     }
 
     public static ArrayList<Integer> applyFilter(int eloLow, int eloHigh, String playerName, String opening){
-        ArrayList<Integer> tempElo = new ArrayList<>();
-        ArrayList<Integer> tempName = new ArrayList<>(playerName != null ? nameToGameID.get(playerName) :
+        long start = System.nanoTime();
+        HashSet<Integer> tempElo = new HashSet<Integer>();
+        HashSet<Integer> tempName = new HashSet<>(playerName != null ? nameToGameID.get(playerName) :
                 Main.glont);
 
         ArrayList<Integer> rArray = new ArrayList<>();
@@ -28,7 +26,7 @@ public class FilterUsage {
 
         int x = 0;
         while(low <= high){
-            if(eloIds.get(low).size() == 0){
+            if(eloIds.get(low).isEmpty()){
                 low++;
                 x = 0;
                 continue;
@@ -41,17 +39,18 @@ public class FilterUsage {
             while(eloIds.get(low).get(x) < eloLow){
                 x++;
             }
-            tempElo.add(eloIds.get(low).get(x));
+            tempElo.add(eloIds.get(low).get(x) + 1);
             x++;
         }
 
         TrieNode cur = CSVT.trieOpening.findNode(opening);
+        System.out.println(cur.getContent());
         if(cur == null){
             return rArray;
         }
-        ArrayList<Integer> openings = new ArrayList<>();
+        HashSet<Integer> openings = new HashSet<>();
         if (cur.isWord()){
-            openings = cur.getGameIDs();
+            openings.addAll(cur.getGameIDs());
         }
         else {
             for (Iterator<TrieNode> it = cur.getAllWordChildren(); it.hasNext(); ) {
@@ -60,13 +59,12 @@ public class FilterUsage {
             }
         }
 
-        for(int i : tempElo){
-            if(tempName.contains(i) && openings.contains(i)){
-                rArray.add(i);
-            }
-        }
-        System.out.println(rArray);
-
+        openings.retainAll(tempElo);
+        openings.retainAll(tempName);
+        rArray.addAll(openings);
+        Collections.sort(rArray);
+        long end = System.nanoTime();
+        System.out.println((end - start) / 1e9);
         return rArray;
     }
 
