@@ -10,28 +10,6 @@ public class Trie {
         rootNode = new TrieNode();
     }
 
-    public TrieNode getRootNode(){
-        return rootNode;
-    }
-
-    boolean isEmpty(){
-        return rootNode == null;
-    }
-
-    boolean containsNode(String word){
-        TrieNode cur = rootNode;
-
-        for(int i = 0; i < word.length(); i++){
-            char c = word.charAt(i);
-            TrieNode node = cur.getChildren().get(c);
-            if(node == null){
-                return false;
-            }
-            cur = node;
-        }
-        return true;
-    }
-
     protected TrieNode findNode(String word){
         TrieNode cur = rootNode;
 

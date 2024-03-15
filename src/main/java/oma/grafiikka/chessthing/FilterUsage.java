@@ -106,14 +106,6 @@ public class FilterUsage {
         }
     }
 
-    public static ArrayList<ArrayList<Integer>> getEloIds(){
-        return eloIds;
-    }
-
-    public static HashMap<String, ArrayList<Integer>> getNameToGameID(){
-        return nameToGameID;
-    }
-
     public static void cleanAndPassToTrie(String word, Trie trie, int id){
         String s = "";
         for(int i = 0; i < word.length(); i++){
