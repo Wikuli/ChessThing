@@ -15,6 +15,7 @@ public class CSVT {
     static int prevMove = 0;
     static ArrayBlockingQueue<CSVTStatus> msgQueue = new ArrayBlockingQueue<>(64);
     static List<Game> games;
+    public static Trie trieOpening = new Trie();
 
     public static class CSVTStatus{
         public enum Type{
@@ -69,7 +70,6 @@ public class CSVT {
 
     }
 
-    public static Trie trieOpening = new Trie();
     protected static void createGameSelectionList(){
         addToQueue(new CSVTStatus(CSVTStatus.Type.numFilterUpdate, 0, null), 1);
         trieOpening = new Trie();

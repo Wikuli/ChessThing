@@ -68,36 +68,6 @@ public class FilterUsage {
         return rArray;
     }
 
-    public static ArrayList<Integer> getContainedIDs(Filter filter, List<Game> games){
-        ArrayList<Integer> elo = new ArrayList<>();
-        int eloLow = filter.eloLow;
-        int eloHigh = filter.eloHigh;
-        for(int i = eloLow / 100; i < eloHigh / 100; i++){
-            for(int x = 0; x < eloIds.get(i).size(); x++){
-                if(games.get(x).getWhitePlayer().getElo() < eloLow){
-                    continue;
-                }
-                else if(games.get(x).getWhitePlayer().getElo() > eloHigh){
-                    break;
-                }
-                elo.add(eloIds.get(i).get(x));
-            }
-        }
-
-        String pName = filter.playerName;
-        ArrayList<Integer> name = new ArrayList<>();
-        if(nameToGameID.containsKey(pName)){
-            name.addAll(nameToGameID.get(pName));
-        }
-        ArrayList<Integer> coffinDance = new ArrayList<>();
-        for(int i = 0; i < Math.max(name.size(), elo.size()); i++){
-            if(name.contains(elo.get(i))){
-                coffinDance.add(elo.get(i));
-            }
-        }
-        return coffinDance;
-    }
-
     public static void createNameToGameID(String name, int i){
         name = name.toLowerCase();
         if(nameToGameID.containsKey(name)){

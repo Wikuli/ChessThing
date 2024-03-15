@@ -7,6 +7,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -44,7 +45,7 @@ public class Main extends Application {
         gameSelectionList.setMaxHeight(600);
         gameSelectionList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         vBox.getChildren().add(gameSelectionList);
-        vBox.setMaxWidth(70);
+        vBox.setMaxWidth(80);
         vBox.setMaxHeight(600);
 
         GameMoves gameMoves = new GameMoves();
@@ -62,12 +63,25 @@ public class Main extends Application {
         hBox.setMaxSize(1200, 600);
         hBox.getChildren().addAll(gameSelectionList, lauta.gp, moveLVs);
         Rectangle rectangle = new Rectangle(10000, 10000, Color.DARKGRAY);
-        Button createFilter = new Button("Filter");
-        createFilter.setVisible(true);
-        VBox vert = new VBox(hBox, createFilter);
-        vert.setSpacing(20);
-        StackPane sp = new StackPane(rectangle, vert);
+        Button createFilter = new Button("Create");
+        Button openFilterFromFile = new Button("Open");
+        Text filterText = new Text("Filter options");
+        HBox filterHbox = new HBox(createFilter, openFilterFromFile);
+        VBox vBoxFilter = new VBox(filterText, filterHbox);
+        vBoxFilter.setMaxWidth(110);
+        vBoxFilter.setSpacing(5);
+        Text openFileTxt = new Text("File");
         Button openFile = new Button("Open");
+        VBox openFileVbox = new VBox(openFileTxt, openFile);
+        openFileVbox.setSpacing(5);
+        HBox controlPanel = new HBox(openFileVbox, vBoxFilter);
+        controlPanel.setSpacing(10);
+        controlPanel.setPadding(new Insets(5));
+
+
+
+        StackPane sp = new StackPane(rectangle);
+        sp.getChildren().add(hBox);
         Text text = new Text("Loading games...");
         text.setFont(new Font(42));
         ProgressBar progressBar = new ProgressBar();
@@ -81,8 +95,9 @@ public class Main extends Application {
         loadingVbox.setTranslateX(200);
         loadingVbox.setTranslateY(200);
         pane.setVisible(false);
-        sp.getChildren().addAll(pane, openFile, createFilter);
-        StackPane.setAlignment(openFile, Pos.BOTTOM_LEFT);
+        sp.getChildren().addAll(pane, controlPanel);
+        StackPane.setAlignment(hBox, Pos.CENTER);
+        StackPane.setAlignment(controlPanel, Pos.BOTTOM_CENTER);
 
         Scene scene = new Scene(sp, 900,750);
         String css = this.getClass().getResource("app.css").toExternalForm();
@@ -213,13 +228,10 @@ public class Main extends Application {
             @Override
             public void handle(MouseEvent event) {
                 String path = openFileExp();
-                pane.setVisible(true);
                 if(path == null){
                     return;
                 }
-                text.setVisible(true);
-                rectangle1.setVisible(true);
-                progressBar.setVisible(true);
+                pane.setVisible(true);
 
                 CSVT.asyncLoad(path);
                 Timer timer = new Timer();
