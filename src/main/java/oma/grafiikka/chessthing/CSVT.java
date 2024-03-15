@@ -69,13 +69,14 @@ public class CSVT {
 
     }
 
+    public static Trie trieOpening = new Trie();
     protected static void createGameSelectionList(){
         addToQueue(new CSVTStatus(CSVTStatus.Type.numFilterUpdate, 0, null), 1);
+        trieOpening = new Trie();
         int x = games.size();
         FilterUsage.clearEloIds();
         FilterUsage.clearNameToGameID();
-        Trie trieOpening = new Trie();
-        FilterUsage.setRootOpening(trieOpening.getRootNode());
+
         for(int i = 0; i < x; i++){
             String blackName = games.get(i).getBlackPlayer().getName();
             String whiteName = games.get(i).getWhitePlayer().getName();

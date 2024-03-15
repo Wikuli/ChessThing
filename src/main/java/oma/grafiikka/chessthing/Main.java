@@ -32,6 +32,8 @@ public class Main extends Application {
     int index = 0;
     ListView<Integer> gameSelectionList = new ListView<>(FXCollections.observableArrayList());
 
+    public static ArrayList<Integer> glont;
+
     public void start(Stage stage){
         Lauta lauta = new Lauta();
         lauta.createBoard();
@@ -61,7 +63,7 @@ public class Main extends Application {
         hBox.getChildren().addAll(gameSelectionList, lauta.gp, moveLVs);
         Rectangle rectangle = new Rectangle(10000, 10000, Color.DARKGRAY);
         Button createFilter = new Button("Filter");
-        //createFilter.setVisible(false);
+        createFilter.setVisible(true);
         VBox vert = new VBox(hBox, createFilter);
         vert.setSpacing(20);
         StackPane sp = new StackPane(rectangle, vert);
@@ -94,7 +96,9 @@ public class Main extends Application {
             public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
 
                 String fenPos = "";
-                index = gameSelectionList.getSelectionModel().getSelectedIndex();
+                index = gameSelectionList.getSelectionModel().getSelectedItem() - 1;
+                System.out.println(gameList.get(index).getOpening());
+                System.out.println(index);
                 try {
                     fenPos = getCurrentBoard(gameList.get(index), 0);
                     whiteMoves.setItems(FXCollections.observableArrayList(gameMoves.getWhiteMoves(gameList.get(index))));
@@ -186,7 +190,7 @@ public class Main extends Application {
                         if(blackMoves.getSelectionModel().isEmpty()) {
                             if(whiteMoves.getSelectionModel().getSelectedIndex() == 0){
                                 whiteMoves.getSelectionModel().clearSelection();
-                                lauta.updateBoard(CSVT.getCurrentBoard(gameList.get(0),0));
+                                lauta.updateBoard(CSVT.getCurrentBoard(gameList.get(index),0));
                             }
                             blackMoves.requestFocus();
                             blackMoves.getSelectionModel().select(whiteMoves.getSelectionModel()
@@ -258,7 +262,7 @@ public class Main extends Application {
                                         @Override
                                         public void run() {
                                             pane.setVisible(false);
-                                            ArrayList<Integer> glont = new ArrayList<>(games.size());
+                                            glont = new ArrayList<>(games.size());
                                             for(int i = 1; i < games.size() + 1; i++){
                                                 glont.add(i);
                                             }
@@ -287,9 +291,7 @@ public class Main extends Application {
         createFilter.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                HBox hBox1 = new HBox();
-                Scene filterStage = new Scene(hBox1, 600,600);
-
+                gameSelectionList.setItems(FXCollections.observableArrayList(FilterUsage.applyFilter(0, 9999, null, "french")));
 
             }
         });

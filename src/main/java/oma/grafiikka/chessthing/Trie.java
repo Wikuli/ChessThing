@@ -32,6 +32,19 @@ public class Trie {
         return true;
     }
 
+    protected TrieNode findNode(String word){
+        TrieNode cur = rootNode;
+
+        for(int i = 0; i < word.length(); i++){
+            char c = word.charAt(i);
+            TrieNode node = cur.getChildren().get(c);
+            if(node == null){
+                return null;
+            }
+            cur = node;
+        }
+        return cur;
+    }
     public void addWord(String word, int id){
         TrieNode cur = rootNode;
 
@@ -39,6 +52,7 @@ public class Trie {
             if(cur.isWord()){
                 cur.setGameIDs(id);
             }
+            System.out.println(c);
             cur = cur.getChildren().computeIfAbsent(c, l -> new TrieNode());
         }
         cur.setGameIDs(id);

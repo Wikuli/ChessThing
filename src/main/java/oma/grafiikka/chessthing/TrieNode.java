@@ -42,18 +42,20 @@ public class TrieNode {
     }
 
     public Iterator<TrieNode> getAllUncomputedChildren() {
-        return new Iter(getChildren().values());
+        return new Iter(getChildren().values(), false);
     }
 
+    public Iterator<TrieNode> getAllWordChildren(){return new Iter(getChildren().values(), true);}
 
 
 
     private class Iter implements Iterator<TrieNode> {
         private Stack<TrieNode> stack = new Stack<>();
-
+        private boolean onlyWords;
         //Initialise the stack with the first node's children from the Trie tree
         //First node is the one we are currently in so we don't need to push that to the stack
-        public Iter(Collection<TrieNode> list){
+        public Iter(Collection<TrieNode> list, boolean onlyWords){
+            this.onlyWords = onlyWords;
             for (TrieNode trieNode : list) {
                 stack.push(trieNode);
             }
@@ -70,7 +72,13 @@ public class TrieNode {
         @Override
         public TrieNode next() {
             TrieNode ret = stack.pop();
-            if(!ret.isWord()){
+            if (onlyWords){
+               while(!ret.isWord()){
+                   ret.getChildren().forEach((key, value) -> stack.push(value));
+                   ret = stack.pop();
+               }
+            }
+            else if (!ret.isWord()){
                 ret.getChildren().forEach((key, value) -> stack.push(value));
             }
             return ret;

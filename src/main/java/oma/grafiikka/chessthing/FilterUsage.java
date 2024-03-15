@@ -5,42 +5,68 @@ import com.github.bhlangonijr.chesslib.game.Game;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 public class FilterUsage {
     static ArrayList<ArrayList<Integer>> eloIds = new ArrayList<>();
-    static TrieNode rootNodeOpening;
     static HashMap<String, ArrayList<Integer>> nameToGameID = new HashMap<>();
 
     public FilterUsage(ArrayList<ArrayList<Integer>> al, TrieNode trieNode, HashMap<String, ArrayList<Integer>> map){
         eloIds = al;
-        rootNodeOpening = trieNode;
         nameToGameID = map;
     }
 
-    public ArrayList<Integer> applyFilter(int eloLow, int eloHigh, String playerName, String opening){
+    public static ArrayList<Integer> applyFilter(int eloLow, int eloHigh, String playerName, String opening){
         ArrayList<Integer> tempElo = new ArrayList<>();
-        ArrayList<Integer> tempName = new ArrayList<>(nameToGameID.get(playerName));
+        ArrayList<Integer> tempName = new ArrayList<>(playerName != null ? nameToGameID.get(playerName) :
+                Main.glont);
+
         ArrayList<Integer> rArray = new ArrayList<>();
         int low = eloLow / 100;
-        int high = eloHigh / 100;
+        int high = Math.min(eloHigh / 100, eloIds.size() - 1);
+
         int x = 0;
         while(low <= high){
-            while(eloIds.get(low).get(x) < eloLow){
-                x++;
+            if(eloIds.get(low).size() == 0){
+                low++;
+                x = 0;
+                continue;
             }
             if(x == eloIds.get(low).size()){
                 low++;
+                x = 0;
                 continue;
             }
+            while(eloIds.get(low).get(x) < eloLow){
+                x++;
+            }
             tempElo.add(eloIds.get(low).get(x));
+            x++;
+        }
+
+        TrieNode cur = CSVT.trieOpening.findNode(opening);
+        if(cur == null){
+            return rArray;
+        }
+        ArrayList<Integer> openings = new ArrayList<>();
+        if (cur.isWord()){
+            openings = cur.getGameIDs();
+        }
+        else {
+            for (Iterator<TrieNode> it = cur.getAllWordChildren(); it.hasNext(); ) {
+                TrieNode node = it.next();
+                openings.addAll(node.getGameIDs());
+            }
         }
 
         for(int i : tempElo){
-            if(tempName.contains(i)){
+            if(tempName.contains(i) && openings.contains(i)){
                 rArray.add(i);
             }
         }
+        System.out.println(rArray);
+
         return rArray;
     }
 
@@ -88,9 +114,6 @@ public class FilterUsage {
     public static void clearNameToGameID(){
         nameToGameID = new HashMap<>();
     }
-    public static void setRootOpening(TrieNode root){
-        rootNodeOpening = root;
-    }
     public static void clearEloIds(){
         eloIds = new ArrayList<>();
     }
@@ -137,5 +160,6 @@ public class FilterUsage {
             s += Character.isLetter(word.charAt(i)) ? Character.toLowerCase(word.charAt(i)) : "";
         }
         trie.addWord(s, id);
+
     }
 }
