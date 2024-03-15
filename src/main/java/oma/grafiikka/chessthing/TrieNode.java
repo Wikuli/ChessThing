@@ -1,7 +1,6 @@
 package oma.grafiikka.chessthing;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 public class TrieNode {
     private HashMap<Character, TrieNode> children = new HashMap<>();
@@ -41,10 +40,13 @@ public class TrieNode {
         return isWord;
     }
 
+    //Returns children that aren't marked as a word
+    //If a node containing isWord == true terminate branch
     public Iterator<TrieNode> getAllUncomputedChildren() {
         return new Iter(getChildren().values(), false);
     }
 
+    //Returns the first children from each branch where isWord == true
     public Iterator<TrieNode> getAllWordChildren(){return new Iter(getChildren().values(), true);}
 
 
@@ -53,7 +55,6 @@ public class TrieNode {
         private Stack<TrieNode> stack = new Stack<>();
         private boolean onlyWords;
         //Initialise the stack with the first node's children from the Trie tree
-        //First node is the one we are currently in so we don't need to push that to the stack
         public Iter(Collection<TrieNode> list, boolean onlyWords){
             this.onlyWords = onlyWords;
             for (TrieNode trieNode : list) {
@@ -61,14 +62,15 @@ public class TrieNode {
             }
         }
 
-        //Check if stack is empty if it is every node has been checked
         @Override
         public boolean hasNext() {
             return !stack.isEmpty();
         }
 
         //Pop the top node from the stack and add it's children to the stack
-        //Return the popped node to the for loop
+        //If onlyWords is set to true skip all nodes marked as !word
+        //When a word node is found its' children aren't added to the stack
+        //If onlyWords is set to false return all nodes
         @Override
         public TrieNode next() {
             TrieNode ret = stack.pop();

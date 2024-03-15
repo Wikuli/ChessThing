@@ -8,6 +8,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -32,6 +33,8 @@ public class Main extends Application {
     List<Game> gameList;
     int index = 0;
     ListView<Integer> gameSelectionList = new ListView<>(FXCollections.observableArrayList());
+    ArrayList<Filter> fArray = new ArrayList<>();
+    ListView<String> filterList = new ListView<>();
 
     public static ArrayList<Integer> glont;
 
@@ -62,7 +65,7 @@ public class Main extends Application {
         HBox hBox = new HBox();
         hBox.setMaxSize(1200, 600);
         hBox.getChildren().addAll(gameSelectionList, lauta.gp, moveLVs);
-        Rectangle rectangle = new Rectangle(10000, 10000, Color.DARKGRAY);
+        Rectangle rectangle = new Rectangle(10000, 10000, Color.MOCCASIN);
         Button createFilter = new Button("Create");
         Button openFilterFromFile = new Button("Open");
         Text filterText = new Text("Filter options");
@@ -74,7 +77,13 @@ public class Main extends Application {
         Button openFile = new Button("Open");
         VBox openFileVbox = new VBox(openFileTxt, openFile);
         openFileVbox.setSpacing(5);
-        HBox controlPanel = new HBox(openFileVbox, vBoxFilter);
+        filterList.setOrientation(Orientation.HORIZONTAL);
+        filterList.setMaxHeight(50);
+        filterList.setMinWidth(500);
+        filterList.setTranslateY(20);
+        filterList.setStyle("-fx-background-color: moccasin;");
+        HBox controlPanel = new HBox(openFileVbox, vBoxFilter, filterList);
+        controlPanel.setMaxHeight(50);
         controlPanel.setSpacing(10);
         controlPanel.setPadding(new Insets(5));
 
@@ -95,9 +104,9 @@ public class Main extends Application {
         loadingVbox.setTranslateX(200);
         loadingVbox.setTranslateY(200);
         pane.setVisible(false);
-        sp.getChildren().addAll(pane, controlPanel);
+        sp.getChildren().addAll(controlPanel, pane);
         StackPane.setAlignment(hBox, Pos.CENTER);
-        StackPane.setAlignment(controlPanel, Pos.BOTTOM_CENTER);
+        StackPane.setAlignment(controlPanel, Pos.TOP_LEFT);
 
         Scene scene = new Scene(sp, 900,750);
         String css = this.getClass().getResource("app.css").toExternalForm();
@@ -188,7 +197,7 @@ public class Main extends Application {
                         else if(blackMoves.getSelectionModel().isEmpty()){
                             blackMoves.requestFocus();
                             blackMoves.getSelectionModel().select(whiteMoves.getSelectionModel().getSelectedIndex());
-                            blackMoves.scrollTo(whiteMoves.getSelectionModel().getSelectedIndex());
+                            blackMoves.scrollTo(blackMoves.getSelectionModel().getSelectedIndex());
                             whiteMoves.getSelectionModel().clearSelection();
                         }
                         else{
@@ -196,7 +205,7 @@ public class Main extends Application {
                                 whiteMoves.requestFocus();
                                 whiteMoves.getSelectionModel().select(blackMoves.getSelectionModel()
                                         .getSelectedIndex() + 1);
-                                whiteMoves.scrollTo(blackMoves.getSelectionModel().getSelectedIndex() + 1);
+                                whiteMoves.scrollTo(whiteMoves.getSelectionModel().getSelectedIndex());
                                 blackMoves.getSelectionModel().clearSelection();
                             }
                         }
@@ -210,13 +219,13 @@ public class Main extends Application {
                             blackMoves.requestFocus();
                             blackMoves.getSelectionModel().select(whiteMoves.getSelectionModel()
                                     .getSelectedIndex() - 1);
-                            blackMoves.scrollTo(whiteMoves.getSelectionModel().getSelectedIndex() - 1);
+                            blackMoves.scrollTo(blackMoves.getSelectionModel().getSelectedIndex());
                             whiteMoves.getSelectionModel().clearSelection();
                         }
                         else{
                             whiteMoves.requestFocus();
                             whiteMoves.getSelectionModel().select(blackMoves.getSelectionModel().getSelectedIndex());
-                            whiteMoves.scrollTo(blackMoves.getSelectionModel().getSelectedIndex());
+                            whiteMoves.scrollTo(whiteMoves.getSelectionModel().getSelectedIndex());
                             blackMoves.getSelectionModel().clearSelection();
                         }
                     }
@@ -303,13 +312,136 @@ public class Main extends Application {
         createFilter.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                gameSelectionList.setItems(FXCollections.observableArrayList(FilterUsage.applyFilter(0, 9999, null, "french")));
+                if (gameList == null){
+                    event.consume();
+                    return;
+                }
+                popupFilterCreation().show();
+            }
+        });
+
+        openFilterFromFile.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (gameList == null){
+                    return;
+                }
+                String path = openFileExp();
+                if (path == null){
+                    return;
+                }
+                fArray = Filter.getFiltersViaFile();
+                if (fArray == null){
+                    return;
+                }
+                ArrayList<String> temp = new ArrayList<>(fArray.size());
+                for (int i = 0; i < fArray.size(); i++){
+                       temp.add(fArray.get(i).getFilterName());
+                }
+                filterList.setItems(FXCollections.observableArrayList(temp));
+                System.out.println(filterList);
 
             }
         });
+
+        filterList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if(filterList.getSelectionModel().getSelectedIndex() < 0){
+                    return;
+                }
+                int eloLow = fArray.get(filterList.getSelectionModel().getSelectedIndex()).getEloLow();
+                int eloHigh = fArray.get(filterList.getSelectionModel().getSelectedIndex()).getEloHigh();
+                String playerName = fArray.get(filterList.getSelectionModel().getSelectedIndex()).getPlayerName();
+                String opening = fArray.get(filterList.getSelectionModel().getSelectedIndex()).getOpening();
+                gameSelectionList.setItems(FXCollections.observableArrayList(
+                        FilterUsage.applyFilter(eloLow, eloHigh, playerName, opening)));
+            }
+        });
+    }
+
+    public Stage popupFilterCreation(){
+        Stage stage = new Stage();
+        GridPane textPane = new GridPane();
+        Text openinTxt = new Text("Opening");
+        TextField openingTxtF = new TextField();
+        textPane.add(openinTxt, 0, 0);
+        textPane.add(openingTxtF, 0, 1);
+        Text playerTxt = new Text("Player");
+        TextField playerTxtF = new TextField();
+        textPane.add(playerTxt, 1, 0);
+        textPane.add(playerTxtF, 1, 1);
+        Text eloLowerBoundTxt = new Text("Elo lower bound");
+        TextField eloLowerBoundTxtF = new TextField();
+        textPane.add(eloLowerBoundTxt, 2, 0);
+        textPane.add(eloLowerBoundTxtF, 2, 1);
+        Text eloHigherBoundTxt = new Text("Elo higher bound");
+        TextField eloHigherBoundTxtF = new TextField();
+        textPane.add(eloHigherBoundTxt, 3, 0);
+        textPane.add(eloHigherBoundTxtF, 3, 1);
+        Text fNameTxt = new Text("Filter name");
+        TextField fNameTxtF = new TextField();
+        textPane.add(fNameTxt, 4, 0);
+        textPane.add(fNameTxtF, 4, 1);
+
+        Button okButton = new Button("OK");
+        Button cancelButton = new Button("Cancel");
+        HBox hBox = new HBox(okButton, cancelButton);
+        VBox vBox = new VBox(textPane, hBox);
+
+        Scene scene = new Scene(vBox);
+        stage.setScene(scene);
+
+
+        cancelButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                stage.hide();
+            }
+        });
+
+        okButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                int eloLow = 0;
+                int eloHigh = 9999;
+                filterList.getSelectionModel().clearSelection();
+                try {
+                    String pName = playerTxtF.getText().isBlank() ? null : playerTxtF.getText();
+                    String opening = openingTxtF.getText();
+
+                    String s = "";
+                    for(int i = 0; i < opening.length(); i++){
+                        s += Character.isLetter(opening.charAt(i)) ? Character.toLowerCase(opening.charAt(i)) : "";
+                    }
+
+                    String filterName = fNameTxtF.getText();
+                    if (!eloLowerBoundTxtF.getText().isBlank()) {
+                        eloLow = Integer.parseInt(eloLowerBoundTxtF.getText());
+                    }
+                    if (!eloHigherBoundTxtF.getText().isBlank()){
+                        eloHigh = Integer.parseInt(eloHigherBoundTxtF.getText());
+                    }
+                    Filter f = new Filter(filterName, eloHigh, eloLow, pName, s);
+                    fArray.add(f);
+                    ArrayList<String> names = new ArrayList<>(fArray.size());
+                    for (int i = 0; i < fArray.size(); i++){
+                        names.add(fArray.get(i).getFilterName());
+                    }
+                    filterList.setItems(FXCollections.observableArrayList(names));
+                }
+                catch (Exception e){
+                    System.out.println(e);
+                }
+                stage.hide();
+            }
+        });
+
+        return stage;
     }
 
     public static void main(String[] args) {
         Application.launch();
     }
+
 }

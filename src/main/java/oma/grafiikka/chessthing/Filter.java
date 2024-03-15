@@ -1,6 +1,7 @@
 package oma.grafiikka.chessthing;
 
 import java.io.*;
+import java.util.ArrayList;
 
 public class Filter implements Serializable {
     String filterName;
@@ -16,14 +17,52 @@ public class Filter implements Serializable {
         this.playerName = playerName;
         this.opening = opening;
     }
+    public String getFilterName() {
+        return filterName;
+    }
 
+    public int getEloLow() {
+        return eloLow;
+    }
 
-    public Filter[] getFiltersViaFile(){
+    public int getEloHigh() {
+        return eloHigh;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public String getOpening() {
+        return opening;
+    }
+
+    public void setFilterName(String filterName) {
+        this.filterName = filterName;
+    }
+
+    public void setEloLow(int eloLow) {
+        this.eloLow = eloLow;
+    }
+
+    public void setEloHigh(int eloHigh) {
+        this.eloHigh = eloHigh;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
+    public void setOpening(String opening) {
+        this.opening = opening;
+    }
+
+    public static ArrayList<Filter> getFiltersViaFile(){
         String path = CSVT.openFileExp();
         try{
             File f = new File(path);
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
-            Filter[] rArr = (Filter[]) ois.readObject();
+            ArrayList<Filter> rArr = (ArrayList<Filter>) ois.readObject();
             ois.close();
             return rArr;
         }
@@ -31,7 +70,6 @@ public class Filter implements Serializable {
             System.out.println("FNF");
         }
         catch (ClassNotFoundException e){
-            e.printStackTrace();
         }
         return null;
     }

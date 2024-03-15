@@ -1,22 +1,14 @@
 package oma.grafiikka.chessthing;
 
 import com.github.bhlangonijr.chesslib.game.Game;
-
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class FilterUsage {
     static ArrayList<ArrayList<Integer>> eloIds = new ArrayList<>();
     static HashMap<String, ArrayList<Integer>> nameToGameID = new HashMap<>();
 
-    public FilterUsage(ArrayList<ArrayList<Integer>> al, TrieNode trieNode, HashMap<String, ArrayList<Integer>> map){
-        eloIds = al;
-        nameToGameID = map;
-    }
-
     public static ArrayList<Integer> applyFilter(int eloLow, int eloHigh, String playerName, String opening){
-        long start = System.nanoTime();
-        HashSet<Integer> tempElo = new HashSet<Integer>();
+        HashSet<Integer> tempElo = new HashSet<>();
         HashSet<Integer> tempName = new HashSet<>(playerName != null ? nameToGameID.get(playerName) :
                 Main.glont);
 
@@ -31,40 +23,41 @@ public class FilterUsage {
                 x = 0;
                 continue;
             }
-            if(x == eloIds.get(low).size()){
+            if(x >= eloIds.get(low).size()){
                 low++;
                 x = 0;
                 continue;
             }
-            while(eloIds.get(low).get(x) < eloLow){
+            while(x < eloIds.get(low).size() && eloIds.get(low).get(x) < eloLow){
                 x++;
             }
-            tempElo.add(eloIds.get(low).get(x) + 1);
+            if(x < eloIds.get(low).size()) {
+                tempElo.add(eloIds.get(low).get(x) + 1);
+            }
             x++;
         }
-
-        TrieNode cur = CSVT.trieOpening.findNode(opening);
-        System.out.println(cur.getContent());
-        if(cur == null){
-            return rArray;
-        }
         HashSet<Integer> openings = new HashSet<>();
-        if (cur.isWord()){
-            openings.addAll(cur.getGameIDs());
+        if (Objects.equals(opening, "")){
+            openings = tempElo;
         }
         else {
-            for (Iterator<TrieNode> it = cur.getAllWordChildren(); it.hasNext(); ) {
-                TrieNode node = it.next();
-                openings.addAll(node.getGameIDs());
+            TrieNode cur = CSVT.trieOpening.findNode(opening);
+            if (cur == null) {
+                return rArray;
+            }
+            if (cur.isWord()) {
+                openings.addAll(cur.getGameIDs());
+            } else {
+                for (Iterator<TrieNode> it = cur.getAllWordChildren(); it.hasNext(); ) {
+                    TrieNode node = it.next();
+                    openings.addAll(node.getGameIDs());
+                }
             }
         }
-
         openings.retainAll(tempElo);
         openings.retainAll(tempName);
         rArray.addAll(openings);
         Collections.sort(rArray);
-        long end = System.nanoTime();
-        System.out.println((end - start) / 1e9);
         return rArray;
     }
 
@@ -124,10 +117,8 @@ public class FilterUsage {
     public static void cleanAndPassToTrie(String word, Trie trie, int id){
         String s = "";
         for(int i = 0; i < word.length(); i++){
-
             s += Character.isLetter(word.charAt(i)) ? Character.toLowerCase(word.charAt(i)) : "";
         }
         trie.addWord(s, id);
-
     }
 }
