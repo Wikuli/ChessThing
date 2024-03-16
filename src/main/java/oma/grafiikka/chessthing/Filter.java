@@ -57,8 +57,7 @@ public class Filter implements Serializable {
         this.opening = opening;
     }
 
-    public static ArrayList<Filter> getFiltersViaFile(){
-        String path = CSVT.openFileExp();
+    public static ArrayList<Filter> getFiltersViaFile(String path){
         try{
             File f = new File(path);
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
@@ -74,12 +73,9 @@ public class Filter implements Serializable {
         return null;
     }
 
-    public void saveFilters(String path, Filter[] p){
-        File f = new File(path);
-        ObjectOutputStream oos = null;
-
+    public static void saveFiltersToFile(File f, ArrayList<Filter> p){
         try{
-            oos = new ObjectOutputStream(new FileOutputStream(f));
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
             oos.writeObject(p);
             oos.close();
         }

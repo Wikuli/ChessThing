@@ -117,25 +117,37 @@ public class CSVT {
         return currentPos.getFen();
     }
 
-    protected static String openFileExp(){
+    protected static String openFileExp(boolean pgn){
         String filePath = "";
         try{
             JFileChooser fileChooser = new JFileChooser();
-            FileNameExtensionFilter filter = new FileNameExtensionFilter("Files", "pgn", "txt");
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("Txt files", "txt");
+            if (pgn) {
+                filter = new FileNameExtensionFilter("PGN files", "pgn");
+            }
             fileChooser.setFileFilter(filter);
             fileChooser.setCurrentDirectory(new File("."));
             int result = fileChooser.showOpenDialog(null);
 
             if(result == JFileChooser.APPROVE_OPTION){
-                filePath = fileChooser.getSelectedFile().getAbsolutePath();
-            }
-            else{
-                filePath = null;
+                return fileChooser.getSelectedFile().getAbsolutePath();
             }
         }
         catch (Exception e){
             System.out.println(e);
         }
-        return filePath;
+        return null;
+    }
+
+    protected static File getSaveLoc(){
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        int res = chooser.showSaveDialog(null);
+
+        if (res == JFileChooser.APPROVE_OPTION){
+            return chooser.getSelectedFile();
+        }
+
+        return null;
     }
 }

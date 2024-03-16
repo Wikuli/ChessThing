@@ -23,6 +23,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.util.*;
 
 import javafx.scene.shape.Rectangle;
@@ -35,8 +36,8 @@ public class Main extends Application {
     ListView<Integer> gameSelectionList = new ListView<>(FXCollections.observableArrayList());
     ArrayList<Filter> fArray = new ArrayList<>();
     ListView<String> filterList = new ListView<>();
-
     public static ArrayList<Integer> glont;
+    private String saveName;
 
     public void start(Stage stage){
         Lauta lauta = new Lauta();
@@ -68,6 +69,7 @@ public class Main extends Application {
         hBox.setPadding(new Insets(10));
         hBox.getChildren().addAll(gameSelectionList, lauta.gp, moveLVs);
         Rectangle rectangle = new Rectangle(10000, 10000, Color.MOCCASIN);
+
         Text filterText = new Text("Filter options");
         Button createFilter = new Button("Create");
         createFilter.setMinWidth(60);
@@ -262,7 +264,7 @@ public class Main extends Application {
         openFile.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                String path = openFileExp();
+                String path = openFileExp(true);
                 if(path == null){
                     return;
                 }
@@ -352,20 +354,19 @@ public class Main extends Application {
                 if (gameList == null){
                     return;
                 }
-                String path = openFileExp();
+                String path = openFileExp(false);
                 if (path == null){
                     return;
                 }
-                fArray = Filter.getFiltersViaFile();
+                fArray = Filter.getFiltersViaFile(path);
                 if (fArray == null){
                     return;
                 }
                 ArrayList<String> temp = new ArrayList<>(fArray.size());
-                for (int i = 0; i < fArray.size(); i++){
-                       temp.add(fArray.get(i).getFilterName());
+                for (Filter filter : fArray) {
+                    temp.add(filter.getFilterName());
                 }
                 filterList.setItems(FXCollections.observableArrayList(temp));
-                System.out.println(filterList);
 
             }
         });
@@ -419,7 +420,14 @@ public class Main extends Application {
         saveFilters.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-
+                if (fArray.isEmpty()){
+                    return;
+                }
+                File file = getSaveLoc();
+                if (file == null){
+                    return;
+                }
+                Filter.saveFiltersToFile(file, fArray);
             }
         });
 
