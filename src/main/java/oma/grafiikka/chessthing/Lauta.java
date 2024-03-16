@@ -36,6 +36,7 @@ public class Lauta{
                 }
             }
         }
+        gp.setMaxSize(600, 600);
     }
 
     //This might need rethinking

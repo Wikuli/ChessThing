@@ -55,26 +55,43 @@ public class Main extends Application {
         HBox moveLVs = new HBox();
         ListView<String> whiteMoves = new ListView<>();
         ListView<String> blackMoves = new ListView<>();
+        whiteMoves.setMaxWidth(80);
+        blackMoves.setMaxWidth(80);
         whiteMoves.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         blackMoves.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-
         moveLVs.getChildren().addAll(whiteMoves, blackMoves);
         moveLVs.setMaxWidth(130);
         moveLVs.setMaxHeight(600);
 
         HBox hBox = new HBox();
-        hBox.setMaxSize(1200, 600);
+        hBox.setMaxSize(800, 600);
+        hBox.setPadding(new Insets(10));
         hBox.getChildren().addAll(gameSelectionList, lauta.gp, moveLVs);
         Rectangle rectangle = new Rectangle(10000, 10000, Color.MOCCASIN);
-        Button createFilter = new Button("Create");
-        Button openFilterFromFile = new Button("Open");
         Text filterText = new Text("Filter options");
-        HBox filterHbox = new HBox(createFilter, openFilterFromFile);
-        VBox vBoxFilter = new VBox(filterText, filterHbox);
+        Button createFilter = new Button("Create");
+        createFilter.setMinWidth(60);
+        Button openFilterFromFile = new Button("Open");
+        openFilterFromFile.setMinWidth(60);
+        Button saveFilters = new Button("Save");
+        saveFilters.setMinWidth(60);
+        Button deleteFilter = new Button("Delete");
+        deleteFilter.setMinWidth(60);
+        filterText.setFont(new Font(18));
+        GridPane filterGp = new GridPane();
+        filterGp.setVgap(2);
+        filterGp.setHgap(2);
+        filterGp.add(createFilter, 0 , 0);
+        filterGp.add(openFilterFromFile, 1, 0);
+        filterGp.add(saveFilters, 0, 1);
+        filterGp.add(deleteFilter, 1, 1);
+
+        VBox vBoxFilter = new VBox(filterText, filterGp);
         vBoxFilter.setMaxWidth(110);
         vBoxFilter.setSpacing(5);
         Text openFileTxt = new Text("File");
         Button openFile = new Button("Open");
+        openFileTxt.setFont(new Font(18));
         VBox openFileVbox = new VBox(openFileTxt, openFile);
         openFileVbox.setSpacing(5);
         filterList.setOrientation(Orientation.HORIZONTAL);
@@ -87,7 +104,13 @@ public class Main extends Application {
         controlPanel.setSpacing(10);
         controlPanel.setPadding(new Insets(5));
 
-
+        Text deleteFilterHelpTxt = new Text("Delete the selected filter");
+        Rectangle deleteFilterHelpBg = new Rectangle( 155, 20);
+        deleteFilterHelpBg.setFill(Color.WHITE);
+        StackPane deleteFilterHelp = new StackPane(deleteFilterHelpBg, deleteFilterHelpTxt);
+        deleteFilterHelp.setMaxSize(155, 20);
+        deleteFilterHelp.setVisible(false);
+        vBoxFilter.getChildren().add(deleteFilterHelp);
 
         StackPane sp = new StackPane(rectangle);
         sp.getChildren().add(hBox);
@@ -104,11 +127,12 @@ public class Main extends Application {
         loadingVbox.setTranslateX(200);
         loadingVbox.setTranslateY(200);
         pane.setVisible(false);
-        sp.getChildren().addAll(controlPanel, pane);
+        sp.getChildren().addAll(controlPanel, deleteFilterHelp, pane);
         StackPane.setAlignment(hBox, Pos.CENTER);
         StackPane.setAlignment(controlPanel, Pos.TOP_LEFT);
+        StackPane.setAlignment(deleteFilterHelp, Pos.TOP_LEFT);
 
-        Scene scene = new Scene(sp, 900,750);
+        Scene scene = new Scene(sp, 1500,1000);
         String css = this.getClass().getResource("app.css").toExternalForm();
         scene.getStylesheets().add(css);
         stage.setScene(scene);
@@ -356,6 +380,55 @@ public class Main extends Application {
                 String opening = fArray.get(filterList.getSelectionModel().getSelectedIndex()).getOpening();
                 gameSelectionList.setItems(FXCollections.observableArrayList(
                         FilterUsage.applyFilter(eloLow, eloHigh, playerName, opening)));
+            }
+        });
+
+        deleteFilter.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (fArray.size() == 0){
+                    return;
+                }
+                fArray.remove(filterList.getSelectionModel().getSelectedIndex());
+                filterList.setItems(FXCollections.observableArrayList(FilterUsage.getFilterNamesFromList(fArray)));
+                filterList.getSelectionModel().clearSelection();
+            }
+        });
+
+        //Needs a fix to kill thread when mouseExited
+        deleteFilter.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                new Thread(() ->{
+                    deleteFilterHelp.setVisible(true);
+                    try {
+                        Thread.sleep(5000);
+                        for (int i = 0; i < 20; i++){
+                            deleteFilterHelp.setOpacity(deleteFilterHelp.getOpacity() - 0.05);
+                            Thread.sleep(100);
+                        }
+                        deleteFilterHelp.setVisible(false);
+                        deleteFilterHelp.setOpacity(1);
+                    }
+                    catch (InterruptedException e){
+                        System.out.println(e);
+                    }
+                }).start();
+            }
+        });
+
+        deleteFilter.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                deleteFilterHelp.setVisible(false);
+                deleteFilterHelp.setOpacity(1);
+            }
+        });
+
+        saveFilters.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+
             }
         });
     }

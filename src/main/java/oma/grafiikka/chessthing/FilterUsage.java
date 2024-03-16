@@ -106,6 +106,14 @@ public class FilterUsage {
         }
     }
 
+    public static ArrayList<String> getFilterNamesFromList(ArrayList<Filter> filters){
+        ArrayList<String> rArray = new ArrayList<>();
+        for(Filter f : filters){
+            rArray.add(f.getFilterName());
+        }
+        return rArray;
+    }
+
     public static void cleanAndPassToTrie(String word, Trie trie, int id){
         String s = "";
         for(int i = 0; i < word.length(); i++){
