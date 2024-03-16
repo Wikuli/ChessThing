@@ -125,7 +125,6 @@ public class CSVT {
             fileChooser.setFileFilter(filter);
             fileChooser.setCurrentDirectory(new File("."));
             int result = fileChooser.showOpenDialog(null);
-            System.out.println(result);
 
             if(result == JFileChooser.APPROVE_OPTION){
                 filePath = fileChooser.getSelectedFile().getAbsolutePath();

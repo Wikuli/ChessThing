@@ -77,6 +77,8 @@ public class Main extends Application {
         saveFilters.setMinWidth(60);
         Button deleteFilter = new Button("Delete");
         deleteFilter.setMinWidth(60);
+        Button unfilter = new Button("Unfilter");
+        unfilter.setMinWidth(60);
         filterText.setFont(new Font(18));
         GridPane filterGp = new GridPane();
         filterGp.setVgap(2);
@@ -85,6 +87,7 @@ public class Main extends Application {
         filterGp.add(openFilterFromFile, 1, 0);
         filterGp.add(saveFilters, 0, 1);
         filterGp.add(deleteFilter, 1, 1);
+        filterGp.add(unfilter, 2, 0);
 
         VBox vBoxFilter = new VBox(filterText, filterGp);
         vBoxFilter.setMaxWidth(110);
@@ -130,7 +133,6 @@ public class Main extends Application {
         sp.getChildren().addAll(controlPanel, deleteFilterHelp, pane);
         StackPane.setAlignment(hBox, Pos.CENTER);
         StackPane.setAlignment(controlPanel, Pos.TOP_LEFT);
-        StackPane.setAlignment(deleteFilterHelp, Pos.TOP_LEFT);
 
         Scene scene = new Scene(sp, 1500,1000);
         String css = this.getClass().getResource("app.css").toExternalForm();
@@ -142,11 +144,11 @@ public class Main extends Application {
         gameSelectionList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Integer>() {
             @Override
             public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
-
+                if (gameSelectionList.getSelectionModel().getSelectedIndex() < 0){
+                    return;
+                }
                 String fenPos = "";
                 index = gameSelectionList.getSelectionModel().getSelectedItem() - 1;
-                System.out.println(gameList.get(index).getOpening());
-                System.out.println(index);
                 try {
                     fenPos = getCurrentBoard(gameList.get(index), 0);
                     whiteMoves.setItems(FXCollections.observableArrayList(gameMoves.getWhiteMoves(gameList.get(index))));
@@ -386,34 +388,24 @@ public class Main extends Application {
         deleteFilter.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if (fArray.size() == 0){
+                if (fArray.isEmpty()){
                     return;
                 }
                 fArray.remove(filterList.getSelectionModel().getSelectedIndex());
                 filterList.setItems(FXCollections.observableArrayList(FilterUsage.getFilterNamesFromList(fArray)));
+                if (fArray.isEmpty()){
+                    gameSelectionList.setItems(FXCollections.observableArrayList(glont));
+                }
                 filterList.getSelectionModel().clearSelection();
             }
         });
 
-        //Needs a fix to kill thread when mouseExited
         deleteFilter.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                new Thread(() ->{
-                    deleteFilterHelp.setVisible(true);
-                    try {
-                        Thread.sleep(5000);
-                        for (int i = 0; i < 20; i++){
-                            deleteFilterHelp.setOpacity(deleteFilterHelp.getOpacity() - 0.05);
-                            Thread.sleep(100);
-                        }
-                        deleteFilterHelp.setVisible(false);
-                        deleteFilterHelp.setOpacity(1);
-                    }
-                    catch (InterruptedException e){
-                        System.out.println(e);
-                    }
-                }).start();
+                deleteFilterHelp.setTranslateX(-stage.getWidth() / 2 + 120);
+                deleteFilterHelp.setTranslateY(-stage.getHeight() / 4 - 120);
+                deleteFilterHelp.setVisible(true);
             }
         });
 
@@ -421,7 +413,6 @@ public class Main extends Application {
             @Override
             public void handle(MouseEvent event) {
                 deleteFilterHelp.setVisible(false);
-                deleteFilterHelp.setOpacity(1);
             }
         });
 
@@ -429,6 +420,15 @@ public class Main extends Application {
             @Override
             public void handle(MouseEvent event) {
 
+            }
+        });
+
+        unfilter.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                gameSelectionList.getSelectionModel().clearSelection();
+                filterList.getSelectionModel().clearSelection();
+                gameSelectionList.setItems(FXCollections.observableArrayList(glont));
             }
         });
     }
