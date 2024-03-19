@@ -1,4 +1,6 @@
 package oma.grafiikka.chessthing;
+
+//https://github.com/bhlangonijr/chesslib
 import com.github.bhlangonijr.chesslib.*;
 import com.github.bhlangonijr.chesslib.game.Game;
 import com.github.bhlangonijr.chesslib.move.MoveList;
@@ -10,6 +12,9 @@ import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Pgn tiedoston käsittelyyn tarkoitettuja metodeja ja kenttiä
+ */
 public class CSVT {
     static Board currentPos = new Board();
     static int prevMove = 0;
@@ -17,7 +22,15 @@ public class CSVT {
     static List<Game> games;
     public static Trie trieOpening = new Trie();
 
+    /**
+     * msgQueueen puskettava luokka, joka sisältää tarvittavat tiedot filttereiden alustamisen etenemisestä ja
+     * pgn-tiedoston lukemisesta
+     */
     public static class CSVTStatus{
+        /**
+         * Sisältää elementit statuksen tyypistä statukseen kuuluvasta viestistä ja intin kuinka monennessa askeleessa
+         * filttereiden alustamisessa mennään
+         */
         public enum Type{
             pgnStart,
             pgnDone,
@@ -37,6 +50,12 @@ public class CSVT {
         public String message;
     }
 
+    /**
+     * Lukee tiedostosijainnissa olevan tiedoston muistiin ja kutsuu addToQueue() statuksien lisäämiseen msgQueueen.
+     * Tämä metodi käyttää suurimmaksi osaksi metodeja chesslibistä
+     * @param path Tiedostosijainti
+     */
+    //Metodit ja kentät PgnHolder, loadPgn, getGames ovat chesslibistä
     protected static void loadPgn(String path){
         addToQueue(new CSVTStatus(CSVTStatus.Type.pgnStart, 0, null), 1);
         games = null;
@@ -47,11 +66,15 @@ public class CSVT {
             addToQueue(new CSVTStatus(CSVTStatus.Type.pgnDone, 0, "Games loaded"), 1);
         }
         catch (Exception e){
-            e.printStackTrace();
             addToQueue(new CSVTStatus(CSVTStatus.Type.pgnFail, 0, e.getMessage()), 10);
         }
     }
 
+    /**
+     * Puskee statuksen msgQueueen
+     * @param status Puskettava status
+     * @param timeout Kuinka kauan statusta yritetään puskea queueen
+     */
     private static void addToQueue(CSVTStatus status, long timeout){
         try{
             msgQueue.offer(status, timeout, TimeUnit.SECONDS);
@@ -60,6 +83,12 @@ public class CSVT {
             System.out.println("Interrupted");
         }
     }
+
+    /**
+     * Luo uuden threadin joka kutsuu metodeja loadPgn() ja createGameSelectionList()
+     * @param path Tiedostosijainti
+     */
+    //Thread stays alive after main stops
     protected static void asyncLoad(String path){
        new Thread(() ->{
            loadPgn(path);
@@ -70,6 +99,12 @@ public class CSVT {
 
     }
 
+    /**
+     * Luo metodikutsujen avulla gameSelectionListin ja alustaa filtterit.
+     * Puskee msgQueueen statusviestejä, jotka kertovat filttereiden alustamisen vaiheen.
+     *
+     */
+    //Metodit getBlackPlayer.* ja getWhitePlayer.get* sekä getOpening ovat chesslibistä
     protected static void createGameSelectionList(){
         addToQueue(new CSVTStatus(CSVTStatus.Type.numFilterUpdate, 0, null), 1);
         trieOpening = new Trie();
@@ -94,6 +129,13 @@ public class CSVT {
         addToQueue(new CSVTStatus(CSVTStatus.Type.filterDone, x, "UwU"), 100);
     }
 
+    /**
+     * Etsii annettujen parametrien avulla oikean kohdan pelistä
+     * @param game Peli, josta oikea kohta etsitään
+     * @param moveNr Kuinka monennessa siirrossa ollaan meneillä
+     * @return (Forsyths-Edwards Notation) FEN-stringin
+     */
+    //Metodit loadMoveText, getHalfMoves, doMove ja getFen ovat chesslibistä
     protected static String getCurrentBoard(Game game, int moveNr){
         try {
             game.loadMoveText();
@@ -117,8 +159,13 @@ public class CSVT {
         return currentPos.getFen();
     }
 
+    /**
+     * Avaa JFileChooserin avulla file explorerin, josta käyttäjä voi valita avattavan tiedoston.
+     * Parametrin avulla tiedostojen filtteröintiä muutetaan sen perusteella etsitäänkö pgn- vai txt-tiedostoja
+     * @param pgn boolean
+     * @return tiedostosijainnin tai null
+     */
     protected static String openFileExp(boolean pgn){
-        String filePath = "";
         try{
             JFileChooser fileChooser = new JFileChooser();
             FileNameExtensionFilter filter = new FileNameExtensionFilter("Txt files", "txt");
@@ -139,6 +186,10 @@ public class CSVT {
         return null;
     }
 
+    /**
+     * Luo tiedoston JFileChooserin avulla
+     * @return luodun tiedoston tai null
+     */
     protected static File getSaveLoc(){
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);

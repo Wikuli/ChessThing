@@ -37,17 +37,12 @@ public class Trie {
             cur.setContent(content);
         }
         cur.setGameIDs(id + 1);
-        //Higher filter creation time for lower filter application time
-        //If current isn't flagged as a word find every gameId from its children
-        //and add them to the current node's GameIDsArr
         if(!cur.isWord() && !isWord){
             ArrayList<Integer> temp = new ArrayList<>();
-            //Loop through all of the nodes under the current node using the iterator
-            for (Iterator<TrieNode> it = cur.getAllUncomputedChildren(); it.hasNext(); ) {
+            for (Iterator<TrieNode> it = cur.getAllWordChildren(); it.hasNext();) {
                 TrieNode node = it.next();
-                if(node.isWord()){
-                    temp.addAll(node.getGameIDs());
-                }
+                temp.addAll(node.getGameIDs());
+
             }
             cur.setGameIDsArr(temp);
         }

@@ -5,9 +5,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
 import java.util.HashMap;
 
+/**
+ * Shakkilaudan ylläpito
+ */
 public class Lauta{
     public GridPane gp = new GridPane();
     private HashMap<Character, Image> kPieces = new HashMap<Character, Image>(){{
@@ -25,6 +27,9 @@ public class Lauta{
         put('R', new Image("file:images/white_rook.png"));
     }};
 
+    /**
+     * Luo tyhjän laudan
+     */
     public void createBoard(){
         for(int i = 0; i < 8; i++){
             for (int x = 0; x < 8; x++){
@@ -40,6 +45,11 @@ public class Lauta{
     }
 
     //This might need rethinking
+
+    /**
+     * Piirtää laudan ja pelinappulat oikeille paikoille
+     * @param fen string
+     */
     public void updateBoard(String fen){
         gp.getChildren().removeAll();
         createBoard();

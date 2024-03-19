@@ -5,7 +5,14 @@ import com.github.bhlangonijr.chesslib.move.MoveList;
 import java.util.ArrayList;
 
 public class GameMoves {
+
+    /**
+     * Etsii pelistä valkoisen siirrot
+     * @param game
+     * @return arraylist valkoisen siirroista
+     */
     public ArrayList<String> getWhiteMoves(Game game){
+        //Tämä on chesslibistä
         MoveList moves = game.getHalfMoves();
         ArrayList<String> whiteAL = new ArrayList<>();
 
@@ -17,6 +24,11 @@ public class GameMoves {
         return whiteAL;
     }
 
+    /**
+     * Etsii pelistä mustan siirrot
+     * @param game
+     * @return arraylist mustan siirroista
+     */
     public ArrayList<String> getBlackMoves(Game game){
         MoveList moves = game.getHalfMoves();
         ArrayList<String> blackAL = new ArrayList<>();

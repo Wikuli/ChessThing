@@ -37,7 +37,6 @@ public class Main extends Application {
     ArrayList<Filter> fArray = new ArrayList<>();
     ListView<String> filterList = new ListView<>();
     public static ArrayList<Integer> glont;
-    private String saveName;
 
     public void start(Stage stage){
         Lauta lauta = new Lauta();
@@ -124,13 +123,12 @@ public class Main extends Application {
         ProgressBar progressBar = new ProgressBar();
         progressBar.setMinWidth(300);
         VBox loadingVbox = new VBox(40);
+        loadingVbox.setMaxSize(300, 200);
         loadingVbox.getChildren().addAll(text, progressBar);
         Rectangle rectangle1 = new Rectangle(10000, 10000);
         rectangle1.setFill(Color.BLACK);
         rectangle1.setOpacity(0.5);
         Pane pane = new Pane(rectangle1, loadingVbox);
-        loadingVbox.setTranslateX(200);
-        loadingVbox.setTranslateY(200);
         pane.setVisible(false);
         sp.getChildren().addAll(controlPanel, deleteFilterHelp, pane);
         StackPane.setAlignment(hBox, Pos.CENTER);
@@ -269,6 +267,8 @@ public class Main extends Application {
                     return;
                 }
                 pane.setVisible(true);
+                loadingVbox.setTranslateX(stage.getWidth() / 2 - 150);
+                loadingVbox.setTranslateY(stage.getHeight() / 2 - 100);
 
                 CSVT.asyncLoad(path);
                 Timer timer = new Timer();
@@ -520,6 +520,7 @@ public class Main extends Application {
 
         return stage;
     }
+
 
     public static void main(String[] args) {
         Application.launch();
