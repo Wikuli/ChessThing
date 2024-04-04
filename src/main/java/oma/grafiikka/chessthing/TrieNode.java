@@ -87,19 +87,12 @@ public class TrieNode {
         return isWord;
     }
 
-    /**
-     * Kutsuu iteraattoria, jokä käy trietä läpi
-     * @return Solmut joita ei ole käyty läpi aiemmin
-     */
-    public Iterator<TrieNode> getAllUncomputedChildren() {
-        return new Iter(getChildren().values(), true);
-    }
 
     /**
      * Kutsuu iteraattoria, joka käy trietä läpi
      * @return Ensimmäinen solmu jokaisesta branchista, joka on merkitty sanaksi
      */
-    public Iterator<TrieNode> getAllWordChildren(){return new Iter(getChildren().values(), true);}
+    public Iterator<TrieNode> getAllWordChildren(){return new Iter(getChildren().values());}
 
 
     /**
@@ -110,8 +103,7 @@ public class TrieNode {
         /**
          * Etsitäänkö vain ensimmäinen solmu jokaisesta branchistä, joka on merkitty sanaksi
          */
-        public Iter(Collection<TrieNode> list, boolean onlyWords){
-            //this.onlyWords = onlyWords;
+        public Iter(Collection<TrieNode> list){
             for (TrieNode trieNode : list) {
                 stack.push(trieNode);
             }
@@ -127,21 +119,15 @@ public class TrieNode {
         }
 
         /**
-         * Poppaa stackista solmun ja riippuen onlyWords kentästä lisää tai ignoraa
          * @return Stackista popatun solmun
          */
         @Override
         public TrieNode next() {
             TrieNode ret = stack.pop();
-            //if (onlyWords){
-               while(!ret.isWord()){
-                   ret.getChildren().forEach((key, value) -> stack.push(value));
-                   ret = stack.pop();
-               }
-            //}
-            /*else if (!ret.isWord()){
+            while(!ret.isWord()){
                 ret.getChildren().forEach((key, value) -> stack.push(value));
-            }*/
+                ret = stack.pop();
+            }
             return ret;
         }
     }

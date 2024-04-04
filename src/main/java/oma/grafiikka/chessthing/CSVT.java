@@ -102,7 +102,6 @@ public class CSVT {
     /**
      * Luo metodikutsujen avulla gameSelectionListin ja alustaa filtterit.
      * Puskee msgQueueen statusviestejä, jotka kertovat filttereiden alustamisen vaiheen.
-     *
      */
     //Metodit getBlackPlayer.* ja getWhitePlayer.get* sekä getOpening ovat chesslibistä
     protected static void createGameSelectionList(){

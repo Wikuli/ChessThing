@@ -3,13 +3,24 @@ package oma.grafiikka.chessthing;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+/**
+ * Trie-rakenne
+ */
 public class Trie {
+    /**
+     * Juurisolmu
+     */
     private TrieNode rootNode;
 
     public Trie(){
         rootNode = new TrieNode();
     }
 
+    /**
+     * Etsii sanan triestä ja palauttaa noden. Noden ei tarvitse olla
+     * @param word sana, joka etsitään triestä
+     * @return etsittävän sanan viimeistä kirjainta vastaavan nodenb
+     */
     protected TrieNode findNode(String word){
         TrieNode cur = rootNode;
 
@@ -23,6 +34,12 @@ public class Trie {
         }
         return cur;
     }
+
+    /**
+     * Lisää sanan trieen
+     * @param word lisättävä sana
+     * @param id pelin id
+     */
     public void addWord(String word, int id){
         TrieNode cur = rootNode;
         boolean isWord = false;
@@ -42,7 +59,6 @@ public class Trie {
             for (Iterator<TrieNode> it = cur.getAllWordChildren(); it.hasNext();) {
                 TrieNode node = it.next();
                 temp.addAll(node.getGameIDs());
-
             }
             cur.setGameIDsArr(temp);
         }
