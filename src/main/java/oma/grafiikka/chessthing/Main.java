@@ -22,12 +22,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
 import java.io.File;
 import java.util.*;
-
 import javafx.scene.shape.Rectangle;
-
 import static oma.grafiikka.chessthing.CSVT.*;
 
 public class Main extends Application {
@@ -38,6 +35,10 @@ public class Main extends Application {
     ListView<String> filterList = new ListView<>();
     public static ArrayList<Integer> glont;
 
+    /**
+     * Pääikkuna
+     * @param stage ikkuna
+     */
     public void start(Stage stage){
         Lauta lauta = new Lauta();
         lauta.createBoard();

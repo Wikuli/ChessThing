@@ -73,10 +73,10 @@ public class TrieNode {
 
     /**
      * Asettaa solmuun tiedon siitä, onko se sana eli avaus
-     * @param v boolean onko solmu avaus
+     * @param val boolean onko solmu avaus
      */
-    public void setIsWord(boolean v) {
-        this.isWord = v;
+    public void setIsWord(boolean val) {
+        this.isWord = val;
     }
 
     /**

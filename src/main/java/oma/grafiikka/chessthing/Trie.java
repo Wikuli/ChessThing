@@ -17,7 +17,7 @@ public class Trie {
     }
 
     /**
-     * Etsii sanan triestä ja palauttaa noden. Noden ei tarvitse olla
+     * Etsii sanan triestä ja palauttaa noden. Nodea ei tarvitse olla merkitty sanaksi
      * @param word sana, joka etsitään triestä
      * @return etsittävän sanan viimeistä kirjainta vastaavan nodenb
      */
