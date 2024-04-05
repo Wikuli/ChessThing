@@ -272,7 +272,7 @@ public class Main extends Application {
                 loadingVbox.setTranslateY(stage.getHeight() / 2 - 100);
 
                 CSVT.asyncLoad(path);
-                Timer timer = new Timer();
+                Timer timer = new Timer(true);
                 timer.schedule(new TimerTask() {
                     @Override
                     public void run() {

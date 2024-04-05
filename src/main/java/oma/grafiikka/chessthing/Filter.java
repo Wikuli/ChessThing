@@ -63,7 +63,7 @@ public class Filter implements Serializable {
 
     /**
      * Avaa tiedostosijainnissa olevan tiedoston ja lukee sen
-     * @param path
+     * @param path Tiedostosijainti
      * @return arralistin tiedostosta löytyneistä filttereistä
      */
     public static ArrayList<Filter> getFiltersViaFile(String path){

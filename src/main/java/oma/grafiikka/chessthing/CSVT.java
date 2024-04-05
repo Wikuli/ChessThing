@@ -88,15 +88,15 @@ public class CSVT {
      * Luo uuden threadin joka kutsuu metodeja loadPgn() ja createGameSelectionList()
      * @param path Tiedostosijainti
      */
-    //Thread stays alive after main stops
     protected static void asyncLoad(String path){
-       new Thread(() ->{
+       Thread thread = new Thread(() ->{
            loadPgn(path);
            if(games != null) {
                createGameSelectionList();
            }
-       }).start();
-
+       });
+       thread.setDaemon(true);
+       thread.start();
     }
 
     /**
