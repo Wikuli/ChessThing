@@ -28,7 +28,7 @@ public class CSVT {
      */
     public static class CSVTStatus{
         /**
-         * Sisältää elementit statuksen tyypistä statukseen kuuluvasta viestistä ja intin kuinka monennessa askeleessa
+         * Sisältää elementit statuksen tyypistä ja intin kuinka monennessa askeleessa
          * filttereiden alustamisessa mennään
          */
         public enum Type{
@@ -166,17 +166,17 @@ public class CSVT {
      */
     protected static String openFileExp(boolean pgn){
         try{
-            JFileChooser fileChooser = new JFileChooser();
+            JFileChooser chooser = new JFileChooser();
             FileNameExtensionFilter filter = new FileNameExtensionFilter("Txt files", "txt");
             if (pgn) {
                 filter = new FileNameExtensionFilter("PGN files", "pgn");
             }
-            fileChooser.setFileFilter(filter);
-            fileChooser.setCurrentDirectory(new File("."));
-            int result = fileChooser.showOpenDialog(null);
+            chooser.setFileFilter(filter);
+            chooser.setCurrentDirectory(new File("C:\\"));
+            int result = chooser.showOpenDialog(null);
 
             if(result == JFileChooser.APPROVE_OPTION){
-                return fileChooser.getSelectedFile().getAbsolutePath();
+                return chooser.getSelectedFile().getAbsolutePath();
             }
         }
         catch (Exception e){

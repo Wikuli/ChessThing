@@ -1,3 +1,7 @@
+/**
+ * Ohjelmassa käytettävän chesslibin github
+ * https://github.com/bhlangonijr/chesslib
+ */
 package oma.grafiikka.chessthing;
 
 import com.github.bhlangonijr.chesslib.game.Game;
